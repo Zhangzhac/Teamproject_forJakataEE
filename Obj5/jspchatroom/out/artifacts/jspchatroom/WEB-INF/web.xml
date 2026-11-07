@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd"
+         version="6.1">
+<display-name>JSP Chatroom</display-name>
+    <!-- Session 配置（分钟） -->
+    <session-config>
+        <session-timeout>60</session-timeout>
+    </session-config>
+
+<!-- 应用级参数：消息上限 -->
+    <context-param>
+    <param-name>maxMessageCount</param-name>
+    <param-value>50</param-value>
+    </context-param>
+
+<!-- 监听器：应用初始化、会话生命周期 -->
+    <listener>
+    <!-- TODO -->
+         <listener-class>edu.hyw.jspchatroom.listener.AppInitListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>edu.hyw.jspchatroom.listener.SessionLifecycleListener</listener-class>
+    </listener>
+<!-- 编码与敏感词过滤 -->
+    <filter>
+    <!-- TODO -->
+        <filter-name>EncodingFilter</filter-name>
+        <filter-class>edu.hyw.jspchatroom.filter.EncodingFilter</filter-class>
+        <init-param>
+            <param-name>charset</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+    <!-- TODO -->
+        <filter-name>EncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+<!-- 登录鉴权过滤 -->
+    <filter>
+        <filter-name>AuthFilter</filter-name>
+        <filter-class>edu.hyw.jspchatroom.filter.AuthFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuthFilter</filter-name>
+        <url-pattern>/chat</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>AuthFilter</filter-name>
+        <url-pattern>/logout</url-pattern>
+    </filter-mapping>
+
+<!-- 欢迎页：默认跳到 login.jsp -->
+    <welcome-file-list>
+    <!-- TODO -->
+        <welcome-file>login.jsp</welcome-file>
+    </welcome-file-list>
+
+</web-app>

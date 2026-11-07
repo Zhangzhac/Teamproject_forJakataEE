@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+    <session-config>
+        <session-timeout>15</session-timeout> <!-- 单位：分钟 -->
+    </session-config>
+    <context-param>
+        <param-name>maxMessageCount</param-name>
+        <param-value>50</param-value>
+    </context-param>
+</web-app>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>edu.hyw</groupId>
+  <artifactId>eljstlchatroom</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <name>jspchatroom</name>
+  <packaging>war</packaging>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- Jakarta EE 11（Servlet 6.1）要求 Java 17+；
+         实验中用到了 instanceof 模式匹配等语法，因此统一到 17。 -->
+    <maven.compiler.release>17</maven.compiler.release>
+    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <junit.version>6.1.3</junit.version>
+  </properties>
+
+  <dependencies>
+<dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+      <!-- 实验 07：H2 文件数据库（JDBC 驱动）。
+           runtime 作用域：编译期不需要它的类，但运行时必须随 WAR 一起发布，
+           因此 Maven 会自动把它打进 WEB-INF/lib。
+           为了让 IntelliJ IDEA 的 exploded-war 工件也能带上驱动，
+           同一份 h2-2.2.224.jar 另外放进了 src/main/webapp/WEB-INF/lib
+           （与 JSTL 的做法一致，两个路径的文件同名同内容，不会冲突）。 -->
+      <dependency>
+          <groupId>com.h2database</groupId>
+          <artifactId>h2</artifactId>
+          <version>2.2.224</version>
+          <scope>runtime</scope>
+      </dependency>
+<dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>jakarta.servlet.jsp</groupId>
+          <artifactId>jakarta.servlet.jsp-api</artifactId>
+          <version>3.1.1</version>
+          <scope>provided</scope>
+      </dependency>
+      <!-- EL 与 JSTL 都使用容器提供的 API，避免把旧版 EL 打进 WAR -->
+      <dependency>
+          <groupId>jakarta.el</groupId>
+          <artifactId>jakarta.el-api</artifactId>
+          <version>6.0.1</version>
+          <scope>provided</scope>
+      </dependency>
+      <!-- JSTL 3.0（Jakarta EE 10+）：供 c:if 等标签使用。
+           jar 已放到 WEB-INF/lib，故这里用 provided，避免 WAR 中重复打包。 -->
+      <dependency>
+          <groupId>jakarta.servlet.jsp.jstl</groupId>
+          <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+          <version>3.0.2</version>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.glassfish.web</groupId>
+          <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+          <version>3.0.1</version>
+          <scope>provided</scope>
+      </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+<plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.5.1</version>
+      </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <source>17</source>
+                <target>17</target>
+                <encoding>UTF-8</encoding>
+            </configuration>
+        </plugin>
+    </plugins>
+  </build>
+</project>

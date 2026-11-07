@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="jspchatroom">
+    <output-path>$PROJECT_DIR$/out/artifacts/jspchatroom</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="eljstlchatroom" />
+        </element>
+      </element>
+      <element id="javaee-facet-resources" facet="eljstlchatroom/web/Web" />
+    </root>
+  </artifact>
+</component>
