@@ -52,17 +52,26 @@ public class TranslateServlet extends HttpServlet {
     private final TranslationDao translationDao = new TranslationDao();
 
     /** 翻译引擎：想换成百度/有道，只改这一行。 */
-    private final TranslationProvider provider = new MyMemoryProvider();
+    private final MyMemoryProvider provider = new MyMemoryProvider();
+    // Fixed lock stripes bound memory and serialize cache misses for each key.
+    private final Object[] locks = java.util.stream.IntStream.range(0, 64).mapToObj(i -> new Object()).toArray();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setLocale("en".equals(request.getParameter("ui")) ? java.util.Locale.ENGLISH : java.util.Locale.CHINESE);
         response.setContentType("text/html;charset=UTF-8");
         response.setHeader("Cache-Control", "no-store");
 
+        if (request.getSession(false) == null || !(request.getSession(false).getAttribute("currentUser") instanceof edu.hyw.jspchatroom.model.User user) || user.getId() <= 0) {
+            response.setStatus(401);
+            writeError(response, "请先登录 / Please sign in");
+            return;
+        }
         String lang = request.getParameter("lang");
         String idParam = request.getParameter("messageId");
 
         if (lang == null || !SUPPORTED.contains(lang) || idParam == null || idParam.isBlank()) {
+            response.setStatus(400);
             writeError(response, "参数不完整，需要 messageId 和 lang");
             return;
         }
@@ -70,50 +79,70 @@ public class TranslateServlet extends HttpServlet {
         int messageId;
         try {
             messageId = Integer.parseInt(idParam.trim());
+            if (messageId <= 0) throw new NumberFormatException();
         } catch (NumberFormatException e) {
+            response.setStatus(400);
             writeError(response, "消息编号无效");
             return;
         }
 
         try {
-            // 1. 缓存命中：直接返回，省下一次接口调用
-            String cached = translationDao.findTranslation(messageId, lang);
+            String source = translationDao.findMessageContent(messageId);
+            if (source == null) { response.setStatus(404); writeError(response, "消息不存在 / Message not found"); return; }
+            String from = request.getParameter("source");
+            if (from == null || from.equals("auto")) from = MyMemoryProvider.detectLanguage(source);
+            if (!SUPPORTED.contains(from)) throw new IllegalArgumentException("原文语言无效 / Invalid source language");
+            // Versioned key bypasses potentially invalid legacy translations without deleting data.
+            String cacheKey = "v2:" + from + ":" + lang;
+            synchronized (locks[(cacheKey.hashCode() ^ messageId) & 63]) {
+            // Cache lookup and provider request share the same lock.
+            String cached = translationDao.findTranslation(messageId, cacheKey);
             if (cached != null) {
                 writeTranslation(response, lang, cached);
                 return;
             }
 
-            // 2. 缓存未命中：取原文 + 调翻译引擎
-            String source = translationDao.findMessageContent(messageId);
-            if (source == null) {
-                writeError(response, "这条消息已经不在了");
-                return;
-            }
-            String translated = provider.translate(source, lang);
+            String translated = provider.translate(source, lang, from);
 
             // 3. 写缓存后再返回（写失败不影响本次显示，所以单独 try）
             try {
-                translationDao.saveTranslation(messageId, lang, translated);
+                translationDao.saveTranslation(messageId, cacheKey, translated);
             } catch (Exception e) {
                 System.err.println("[TranslateServlet] 翻译结果没存进缓存: " + e.getMessage());
             }
             writeTranslation(response, lang, translated);
+            }
+        } catch (IllegalArgumentException e) {
+            response.setStatus(400);
+            writeError(response, e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            writeError(response, "翻译失败：" + e.getMessage());
+            response.setStatus(502);
+            writeError(response, "翻译暂不可用，请稍后重试 / Translation unavailable; retry later");
         }
     }
 
     /** 输出译文片段。 */
     private void writeTranslation(HttpServletResponse response, String lang, String text) throws IOException {
         response.getWriter().write("<div class=\"translation\">"
-                + "<span class=\"tr-lang\">[" + escapeHtml(LANG_NAMES.getOrDefault(lang, lang)) + "]</span> "
+                + "<span class=\"tr-lang\">[" + escapeHtml("en".equals(response.getLocale().getLanguage()) ? Map.of("zh", "Chinese", "en", "English", "ja", "Japanese", "ko", "Korean").getOrDefault(lang, lang) : LANG_NAMES.getOrDefault(lang, lang)) + "]</span> "
                 + escapeHtml(text)
                 + "</div>");
     }
 
     /** 输出错误片段（前端直接显示在消息下面）。 */
     private void writeError(HttpServletResponse response, String message) throws IOException {
+        boolean english = "en".equals(response.getLocale().getLanguage());
+        if (message.contains(" / ")) {
+            String[] parts = message.split(" / ", 2);
+            message = parts[english ? 1 : 0];
+        } else if (english) {
+            message = switch (message) {
+                case "参数不完整，需要 messageId 和 lang" -> "Missing or invalid messageId or target language.";
+                case "消息编号无效" -> "Invalid message ID.";
+                default -> "Translation request failed. Please retry.";
+            };
+        }
         response.getWriter().write("<div class=\"translation err\">" + escapeHtml(message) + "</div>");
     }
 

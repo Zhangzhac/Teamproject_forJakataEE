@@ -16,7 +16,7 @@ import java.time.Duration;
  *
  * <p>选它的理由：<b>不需要注册、不需要申请 key</b>，拿来就能跑，
  * 适合先验证整个流程；缺点是每天有匿名额度限制，而且<b>不能自动检测源语言</b>，
- * 必须明确告诉它 langpair（所以见 {@link #langPair(String)} 的简单规则）。</p>
+ * 必须明确告诉它 langpair（所以见 语言判断 的简单规则）。</p>
  *
  * <p>HTTP 客户端用 JDK 自带的 {@link HttpClient}（Java 11+），
  * 不需要引入任何第三方库。</p>
@@ -33,7 +33,15 @@ public class MyMemoryProvider implements TranslationProvider {
 
     @Override
     public String translate(String text, String targetLang) throws Exception {
-        String pair = langPair(targetLang);
+        return translate(text, targetLang, detectLanguage(text));
+    }
+
+    public String translate(String text, String targetLang, String sourceLang) throws Exception {
+        if (sourceLang.equals(targetLang)) return text;
+        if (text.getBytes(StandardCharsets.UTF_8).length > 500)
+            throw new IllegalArgumentException("原文超过翻译服务的 500 字节限制，请发送较短消息 / Text exceeds 500 UTF-8 bytes");
+        String pair = (sourceLang.equals("zh") ? "zh-CN" : sourceLang) + "|"
+                + (targetLang.equals("zh") ? "zh-CN" : targetLang);
         String url = ENDPOINT
                 + "?q=" + URLEncoder.encode(text, StandardCharsets.UTF_8)
                 + "&langpair=" + URLEncoder.encode(pair, StandardCharsets.UTF_8);
@@ -51,6 +59,8 @@ public class MyMemoryProvider implements TranslationProvider {
         }
 
         String body = response.body();
+        java.util.regex.Matcher statusMatch = java.util.regex.Pattern.compile("\"responseStatus\"\\s*:\\s*(?:\"200\"|200)(?=\\s*[,}])").matcher(body);
+        if (!statusMatch.find()) throw new IOException("翻译服务拒绝请求或额度已用完 / Translation service rejected request");
         String translated = readJsonString(body, "translatedText");
         if (translated == null || translated.isBlank()) {
             String status = readJsonString(body, "responseStatus");
@@ -64,20 +74,24 @@ public class MyMemoryProvider implements TranslationProvider {
     }
 
     /**
-     * 根据目标语言反推源语言。
+     * 依据文字脚本判断源语言；有歧义时允许手动选择。
      *
      * <p>MyMemory 不支持 autodetect，聊天室里主要是中英文混着说，
-     * 这里用最简单的规则：翻成中文时按“英文原文”处理，翻成其它语言时按“中文原文”处理。
-     * 如果以后要更准，可以换成支持 {@code auto} 检测的百度翻译。</p>
+     * 这里按假名、韩文、汉字和拉丁字母判断；纯汉字日文及混合语言需手动纠正。
+     * 此规则是启发式判断，不等同于完整的语言检测。</p>
      */
-    private String langPair(String targetLang) {
-        if ("zh".equals(targetLang)) {
-            return "en|zh-CN";
+    public static String detectLanguage(String text) {
+        boolean han = false, latin = false;
+        for (int cp : text.codePoints().toArray()) {
+            Character.UnicodeScript script = Character.UnicodeScript.of(cp);
+            if (script == Character.UnicodeScript.HIRAGANA || script == Character.UnicodeScript.KATAKANA) return "ja";
+            if (script == Character.UnicodeScript.HANGUL) return "ko";
+            if (script == Character.UnicodeScript.HAN) han = true;
+            if (script == Character.UnicodeScript.LATIN) latin = true;
         }
-        if ("en".equals(targetLang)) {
-            return "zh-CN|en";
-        }
-        return "zh-CN|" + targetLang;
+        if (han) return "zh";
+        if (latin) return "en";
+        throw new IllegalArgumentException("无法判断原文语言，请手动选择 / Select the source language");
     }
 
     /**
@@ -99,7 +113,9 @@ public class MyMemoryProvider implements TranslationProvider {
         if (colon < 0) {
             return null;
         }
-        int quote = json.indexOf('"', colon + 1);
+        int quote = colon + 1;
+        while (quote < json.length() && Character.isWhitespace(json.charAt(quote))) quote++;
+        if (quote >= json.length() || json.charAt(quote) != '"') return null;
         if (quote < 0) {
             return null;
         }
@@ -143,3 +159,4 @@ public class MyMemoryProvider implements TranslationProvider {
         return null;
     }
 }
+
