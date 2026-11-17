@@ -63,6 +63,25 @@ public class DBInitListener implements ServletContextListener {
     private static final String DDL_INDEX =
             "CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages (created_at)";
 
+    /**
+     * 翻译缓存表（实验扩展：消息翻译）。
+     *
+     * <p>同一条消息的同一种语言只保存一份，用来省下免费翻译接口的每日额度。
+     * 主键是 (message_id, lang) 联合主键，重复翻译同一条消息不会产生重复行。</p>
+     *
+     * <p>译文用 {@code CLOB} 而不是 {@code VARCHAR}：译文长度不可控，
+     * 超过 VARCHAR 上限会直接报错。</p>
+     */
+    private static final String DDL_TRANSLATIONS = """
+            CREATE TABLE IF NOT EXISTS message_translation (
+                message_id INT         NOT NULL,
+                lang       VARCHAR(10) NOT NULL,
+                content    CLOB        NOT NULL,
+                created_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (message_id, lang)
+            )
+            """;
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext app = sce.getServletContext();
@@ -95,6 +114,14 @@ public class DBInitListener implements ServletContextListener {
                 }
 
                 execute(c, DDL_INDEX);
+
+                // 翻译缓存表（实验扩展）：老数据库文件里没有这张表，这里补建
+                if (!tableExists(c, "MESSAGE_TRANSLATION")) {
+                    execute(c, DDL_TRANSLATIONS);
+                    System.out.println("[DBInitListener] 已创建表 message_translation");
+                } else {
+                    System.out.println("[DBInitListener] 表 message_translation 已存在，跳过建表");
+                }
             }
 
             // 3. 重启后没有任何会话，把在线状态统一清零

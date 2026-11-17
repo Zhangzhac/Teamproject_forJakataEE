@@ -100,6 +100,14 @@
         ul.msg li { margin: 3px 0; }
         textarea { width: 460px; }
         .me { color: #06c; }
+        /* ---- 消息翻译（实验扩展） ---- */
+        .tr-btn { border: none; background: none; cursor: pointer; font-size: 13px; padding: 0 4px; opacity: .45; }
+        .tr-btn:hover { opacity: 1; }
+        .tr-slot { margin: 3px 0 5px 2em; }
+        .tr-slot button { margin-right: 6px; font-size: 12px; cursor: pointer; }
+        .translation { color: #0a7d32; font-size: 13px; border-left: 3px solid #0a7d32; padding-left: 8px; }
+        .translation .tr-lang { color: #888; font-size: 12px; }
+        .translation.err { color: #b00; border-left-color: #b00; }
     </style>
 </head>
 <body>
@@ -126,13 +134,16 @@
                 <p class="meta"><fmt:message key="message.noMessages"/></p>
             </c:when>
             <c:otherwise>
-                <ul class="msg">
+                <ul class="msg" id="msgList">
                     <c:forEach var="m" items="${messages}">
-                        <li>
+                        <li data-id="${m.id}">
                             <span class="meta">[<fmt:formatDate value="${m.createdAt}" pattern="MM-dd HH:mm"/>]</span>
                             <b><c:out value="${m.username}"/></b>:
                             <%-- c:out 默认转义 HTML，防止消息内容中的标签破坏页面 --%>
                             <c:out value="${m.content}"/>
+                            <%-- 翻译入口：点 🌐 选目标语言，译文插到本行下面的 .tr-slot 里 --%>
+                            <button type="button" class="tr-btn" data-id="${m.id}" title="翻译这条消息">🌐</button>
+                            <div class="tr-slot" data-id="${m.id}"></div>
                         </li>
                     </c:forEach>
                 </ul>
@@ -179,5 +190,52 @@
         </form>
     </div>
 </div>
+
+<%-- ============ 消息翻译（实验扩展） ============ --%>
+<%-- 点消息旁的 🌐 → 展开语言按钮 → 请求 /api/translate → 把返回的 HTML 片段
+     插到这条消息下面的 .tr-slot 里。再点一次 🌐 收起。 --%>
+<script>
+(function () {
+    var ctx = '${pageContext.request.contextPath}';
+    var list = document.getElementById('msgList');
+    if (!list) return;
+
+    var LANGS = [['zh', '中文'], ['en', 'English'], ['ja', '日本語'], ['ko', '한국어']];
+
+    // 事件委托：绑定在 <ul> 上，以后消息列表怎么变都不用重新绑
+    list.addEventListener('click', function (ev) {
+        var btn = ev.target.closest('.tr-btn');
+        if (!btn) return;
+
+        var slot = list.querySelector('.tr-slot[data-id="' + btn.dataset.id + '"]');
+        if (!slot) return;
+
+        if (slot.dataset.open) {          // 已经是展开状态 → 收起
+            slot.dataset.open = '';
+            slot.innerHTML = '';
+            return;
+        }
+        slot.dataset.open = '1';
+        slot.innerHTML = '<span class="meta">翻译成：</span>';
+
+        LANGS.forEach(function (pair) {
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.textContent = pair[1];
+            b.onclick = function () { requestTranslation(btn.dataset.id, pair[0], slot); };
+            slot.appendChild(b);
+        });
+    });
+
+    function requestTranslation(id, lang, slot) {
+        slot.innerHTML = '<span class="meta">翻译中…</span>';
+        fetch(ctx + '/api/translate?messageId=' + encodeURIComponent(id) + '&lang=' + encodeURIComponent(lang),
+              {cache: 'no-store'})
+            .then(function (r) { return r.text(); })
+            .then(function (html) { slot.innerHTML = html; })
+            .catch(function () { slot.innerHTML = '<span class="meta">翻译失败，请稍后重试</span>'; });
+    }
+})();
+</script>
 </body>
 </html>

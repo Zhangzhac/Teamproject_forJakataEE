@@ -28,6 +28,25 @@
         <listener-class>edu.hyw.jspchatroom.listener.DBInitListener</listener-class>
     </listener>
 
+    <!-- JSP 编译级别：本项目按 Java 17 编写（pom.xml 中 maven.compiler.release=17），
+         页面里用到了 instanceof 模式匹配（chat.jsp / logout.jsp），
+         而 Tomcat 的 JspServlet 默认编译器 source level 低于 16，
+         会报 "Pattern Matching in instanceof Expressions is only available with source level 16"。
+         这里把 JSP 的编译源码/目标级别显式抬到 17，与项目保持一致。 -->
+    <servlet>
+        <servlet-name>jsp</servlet-name>
+        <servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
+        <init-param>
+            <param-name>compilerSourceVM</param-name>
+            <param-value>17</param-value>
+        </init-param>
+        <init-param>
+            <param-name>compilerTargetVM</param-name>
+            <param-value>17</param-value>
+        </init-param>
+        <load-on-startup>3</load-on-startup>
+    </servlet>
+
     <!-- 编码与敏感词过滤 -->
     <filter>
         <filter-name>EncodingFilter</filter-name>
