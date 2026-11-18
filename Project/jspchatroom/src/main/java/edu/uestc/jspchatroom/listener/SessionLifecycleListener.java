@@ -1,42 +1,27 @@
 package edu.uestc.jspchatroom.listener;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import java.util.List;
+import edu.uestc.jspchatroom.dao.UserDao;
+import edu.uestc.jspchatroom.model.User;
+import jakarta.servlet.http.HttpSessionEvent;
+import jakarta.servlet.http.HttpSessionListener;
 
-/**
- * SessionLifecycleListener
- * 监听会话创建/销毁；统计在线会话数，销毁时从在线用户列表移除。
- */
-public class SessionLifecycleListener implements HttpSessionListener {
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-    @Override
-    public void sessionCreated(HttpSessionEvent se) {
-        ServletContext app = se.getSession().getServletContext();
-        synchronized (app) {
-            Integer c = (Integer) app.getAttribute("onlineCount");
-            if (c == null) c = 0;
-            app.setAttribute("onlineCount", c + 1);
-        }
-    }
+public final class SessionLifecycleListener implements HttpSessionListener {
+    private static final Logger LOGGER = Logger.getLogger(SessionLifecycleListener.class.getName());
+
+    private final UserDao users = new UserDao();
 
     @Override
-    public void sessionDestroyed(HttpSessionEvent se) {
-        HttpSession session = se.getSession();
-        ServletContext app = session.getServletContext();
-
-        // 移除对应用户（处理超时/直接关闭浏览器等情况）
-        String username = (String) session.getAttribute("user");
-        if (username != null) {
-            @SuppressWarnings("unchecked")
-            List<String> users = (List<String>) app.getAttribute("users");
-            if (users != null) users.remove(username);
-        }
-
-        synchronized (app) {
-            Integer c = (Integer) app.getAttribute("onlineCount");
-            if (c == null) c = 0;
-            app.setAttribute("onlineCount", Math.max(0, c - 1));
+    public void sessionDestroyed(HttpSessionEvent event) {
+        Object current = event.getSession().getAttribute("currentUser");
+        if (current instanceof User user && user.getId() > 0) {
+            try {
+                users.setOnline(user.getId(), false);
+            } catch (RuntimeException e) {
+                LOGGER.log(Level.WARNING, "Could not mark user offline: " + user.getId(), e);
+            }
         }
     }
 }

@@ -1,14 +1,18 @@
 package edu.uestc.jspchatroom.filter;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
+import edu.uestc.jspchatroom.model.User;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 
-/**
- * AuthFilter
- * 保护 chat.jsp 与 logout.jsp；未登录则重定向 login.jsp；
- * 并记录最近活跃时间 lastActiveAt。
- */
+/** Requires a signed-in session for the protected page controllers. */
 public class AuthFilter implements Filter {
 
     @Override
@@ -17,17 +21,20 @@ public class AuthFilter implements Filter {
 
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
-
+        resp.setHeader("Cache-Control", "no-store");
         HttpSession session = req.getSession(false);
-        String user = (session == null) ? null : (String) session.getAttribute("user");
 
-        if (user == null) {
-            resp.sendRedirect(req.getContextPath() + "/login.jsp");
+        Object current = (session == null) ? null : session.getAttribute("currentUser");
+        if (!(current instanceof User user) || user.getId() <= 0) {
+            if ("fetch".equals(req.getHeader("X-Chat-Request"))) {
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+            String lang = req.getParameter("lang");
+            String langQuery = ("zh".equals(lang) || "en".equals(lang)) ? "?lang=" + lang : "";
+            resp.sendRedirect(req.getContextPath() + "/login.jsp" + langQuery);
             return;
         }
-
-        // 记录最近活跃时间（页面顶部展示）
-        session.setAttribute("lastActiveAt", System.currentTimeMillis());
 
         chain.doFilter(request, response);
     }

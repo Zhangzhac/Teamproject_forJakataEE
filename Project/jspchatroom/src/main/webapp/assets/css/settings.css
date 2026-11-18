@@ -1,0 +1,4 @@
+body { font-family: system-ui, "Microsoft YaHei", sans-serif; max-width: 680px; margin: 40px auto; padding: 0 20px; line-height: 1.7; color: #263238; }
+section { border: 1px solid #ddd; border-radius: 10px; padding: 20px; margin: 20px 0; }
+button, select { padding: 8px 12px; font: inherit; }
+.note { color: #666; font-size: 14px; }

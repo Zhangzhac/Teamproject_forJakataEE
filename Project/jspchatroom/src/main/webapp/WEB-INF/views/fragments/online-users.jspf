@@ -1,0 +1,17 @@
+<div id="onlineUserList" aria-live="polite">
+        <c:choose>
+            <c:when test="${empty onlineUsers}">
+                <p class="meta"><fmt:message key="message.noUsers"/></p>
+            </c:when>
+            <c:otherwise>
+                <ul>
+                    <c:forEach var="u" items="${onlineUsers}">
+                        <li>
+                            <c:out value="${u.username}"/>
+                            <span class="meta">(<fmt:formatDate value="${u.lastLoginAt}" pattern="HH:mm:ss"/>)</span>
+                        </li>
+                    </c:forEach>
+                </ul>
+            </c:otherwise>
+        </c:choose>
+        </div>
