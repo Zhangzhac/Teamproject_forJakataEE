@@ -1,0 +1,36 @@
+<section class="settings-card" aria-labelledby="avatarHeading">
+    <h2 id="avatarHeading"><fmt:message key="avatar.heading"/></h2>
+    <fmt:message key="avatar.invalid" var="avatarInvalid"/>
+    <fmt:message key="avatar.tooLarge" var="avatarTooLarge"/>
+    <fmt:message key="avatar.dimensions" var="avatarDimensions"/>
+    <c:set var="avatarRevision" value="${avatarVersions[currentUser.id]}"/>
+    <form id="avatarForm" class="avatar-form" method="post" action="${pageContext.request.contextPath}/settings.jsp?lang=${pageLang}"
+          enctype="multipart/form-data" data-invalid="<c:out value='${avatarInvalid}'/>"
+          data-too-large="<c:out value='${avatarTooLarge}'/>" data-dimensions="<c:out value='${avatarDimensions}'/>">
+        <input type="hidden" name="avatarUploadToken" value="<c:out value='${avatarUploadToken}'/>">
+        <figure class="avatar-figure">
+            <div class="avatar avatar-self avatar-preview" aria-hidden="true">
+                <img id="avatarPreview" class="avatar-image" alt="" width="200" height="200"
+                     <c:choose>
+                         <c:when test="${not empty avatarRevision}">src="${pageContext.request.contextPath}/avatar?id=${currentUser.id}&amp;v=${avatarRevision}"</c:when>
+                         <c:otherwise>hidden</c:otherwise>
+                     </c:choose>>
+                <span id="avatarInitial" ${empty avatarRevision ? '' : 'hidden'}><c:out value="${fn:substring(currentUser.username, 0, 1)}"/></span>
+            </div>
+            <figcaption class="meta"><fmt:message key="avatar.preview"/></figcaption>
+        </figure>
+        <div class="avatar-fields">
+            <label for="avatarFile"><fmt:message key="avatar.chooseLabel"/></label>
+            <input id="avatarFile" name="avatar" type="file" accept="image/jpeg,image/png" required aria-describedby="avatarHelp">
+            <p class="meta" id="avatarHelp"><fmt:message key="avatar.help"/></p>
+            <button class="button button-primary avatar-save" type="submit"><fmt:message key="avatar.save"/></button>
+            <p id="avatarPreviewError" class="avatar-error" role="alert" hidden></p>
+        </div>
+    </form>
+    <c:if test="${not empty avatarError}">
+        <p class="avatar-error" role="alert"><fmt:message key="${avatarError}"/></p>
+    </c:if>
+    <c:if test="${avatarSaved}">
+        <p class="avatar-success" role="status"><fmt:message key="avatar.saved"/></p>
+    </c:if>
+</section>

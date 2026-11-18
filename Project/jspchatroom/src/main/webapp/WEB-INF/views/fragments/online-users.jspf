@@ -1,17 +1,22 @@
 <div id="onlineUserList" aria-live="polite">
-        <c:choose>
-            <c:when test="${empty onlineUsers}">
-                <p class="meta"><fmt:message key="message.noUsers"/></p>
-            </c:when>
-            <c:otherwise>
-                <ul>
-                    <c:forEach var="u" items="${onlineUsers}">
-                        <li>
-                            <c:out value="${u.username}"/>
-                            <span class="meta">(<fmt:formatDate value="${u.lastLoginAt}" pattern="HH:mm:ss"/>)</span>
-                        </li>
-                    </c:forEach>
-                </ul>
-            </c:otherwise>
-        </c:choose>
-        </div>
+    <c:choose>
+        <c:when test="${empty onlineUsers}">
+            <p class="presence-empty"><fmt:message key="message.noUsers"/></p>
+        </c:when>
+        <c:otherwise>
+            <ul class="presence-list">
+                <c:forEach var="u" items="${onlineUsers}">
+                    <li>
+                        <c:set var="avatarUserId" value="${u.id}"/>
+                        <c:set var="avatarName" value="${u.username}"/>
+                        <span class="avatar" aria-hidden="true">
+                            <%@ include file="avatar-image.jspf" %>
+                        </span>
+                        <span class="presence-name"><c:out value="${u.username}"/></span>
+                        <time><fmt:formatDate value="${u.lastLoginAt}" pattern="HH:mm"/></time>
+                    </li>
+                </c:forEach>
+            </ul>
+        </c:otherwise>
+    </c:choose>
+</div>

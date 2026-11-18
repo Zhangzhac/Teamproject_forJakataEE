@@ -1,4 +1,34 @@
-body { font-family: system-ui, "Microsoft YaHei", sans-serif; max-width: 680px; margin: 40px auto; padding: 0 20px; line-height: 1.7; color: #263238; }
-section { border: 1px solid #ddd; border-radius: 10px; padding: 20px; margin: 20px 0; }
-button, select { padding: 8px 12px; font: inherit; }
-.note { color: #666; font-size: 14px; }
+.settings-layout { width: min(100% - 2rem, 780px); margin: 2rem auto; }
+.settings-header { display: flex; justify-content: space-between; align-items: center; gap: .8rem; margin-bottom: 1.4rem; }
+.settings-header .brand { font-size: 1rem; }
+.settings-layout h1 { font-size: clamp(1.5rem, 4vw, 2.15rem); margin: 0 0 .2rem; letter-spacing: -.045em; }
+.settings-layout .back-note { margin: 0 0 1.25rem; }
+.settings-card { margin-bottom: .9rem; padding: clamp(1rem, 3vw, 1.35rem); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.settings-card h2 { margin: 0 0 .7rem; font-size: 1.06rem; }
+.settings-card p { margin: .45rem 0; line-height: 1.58; }
+.settings-card label, .settings-card p:not(.meta) { font-size: .9rem; }
+.settings-card select, .settings-card button { margin: .22rem .38rem .22rem 0; padding: .48rem .65rem; border: 1px solid var(--input-border); border-radius: 8px; background: var(--settings-control); color: var(--ink); }
+.settings-card button:hover:not(:disabled) { background: var(--accent-soft); }
+#voiceLog { max-height: 300px; overflow: auto; padding: .8rem .85rem; border-radius: 8px; background: var(--log-bg); white-space: pre-wrap; overflow-wrap: anywhere; font-size: .77rem; line-height: 1.6; }
+#settingsStatus:empty { display: none; }
+
+@media (max-width: 460px) {
+    .settings-header { align-items: flex-start; flex-direction: column; }
+}
+
+.avatar-form { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 1rem 1.25rem; }
+.avatar-figure { flex: none; margin: 0; text-align: center; }
+.avatar-preview { width: 96px; height: 96px; border: 1px solid var(--line); font-size: 2rem; }
+.avatar-figure figcaption { margin-top: .35rem; }
+.avatar-fields { flex: 1 1 230px; min-width: 0; }
+.avatar-fields label { display: block; margin-bottom: .4rem; font-weight: 650; }
+.avatar-fields input[type="file"] { display: block; max-width: 100%; font-size: .85rem; }
+.avatar-fields input[type="file"]::file-selector-button {
+    margin-right: .5rem; padding: .45rem .55rem; font: inherit;
+    border: 1px solid var(--input-border); border-radius: 7px;
+    background: var(--settings-control); color: var(--ink); cursor: pointer;
+}
+.settings-card .avatar-save { background: var(--accent); border-color: var(--accent); color: var(--button-ink); }
+.settings-card .avatar-save:hover:not(:disabled) { background: var(--accent-hover); }
+.avatar-error { color: var(--error-ink); }
+.avatar-success { color: var(--translation-ink); }

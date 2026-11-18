@@ -29,8 +29,14 @@ public final class ChatController extends PageController {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        var snapshot = chat.snapshot(messageLimit);
-        request.setAttribute("currentUser", currentUser(request));
+        var user = currentUser(request);
+        if (user == null) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+        var snapshot = chat.snapshot(messageLimit, user.getId());
+        request.setAttribute("currentUser", user);
+        request.setAttribute("avatarVersions", snapshot.avatarVersions());
         request.setAttribute("messages", snapshot.messages());
         request.setAttribute("onlineUsers", snapshot.onlineUsers());
         request.setAttribute("onlineUserCount", snapshot.onlineUsers().size());

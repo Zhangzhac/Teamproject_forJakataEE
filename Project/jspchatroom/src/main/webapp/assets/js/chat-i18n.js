@@ -38,8 +38,8 @@
     "en": "Requesting recognition; language zh-CN"
   },
   "ui9": {
-    "zh": "已启用麦克风，但 15 秒内未收到最终文字；请到语音设置页查看诊断记录，可能是收音或在线识别服务问题。",
-    "en": "Microphone enabled, but no final text after 15 seconds. Check diagnostics in Voice settings for audio or service issues."
+    "zh": "已启用麦克风，但 15 秒内未收到最终文字；请到设置页查看诊断记录，可能是收音或在线识别服务问题。",
+    "en": "Microphone enabled, but no final text after 15 seconds. Check diagnostics in Settings for audio or service issues."
   },
   "ui10": {
     "zh": "15 秒内未开始收音；请检查 Chrome 麦克风设置和识别服务。",
@@ -174,8 +174,8 @@
     "en": "Only interim results were received; no final text. Try again."
   },
   "ui43": {
-    "zh": "未收到任何识别文字。请查看诊断记录；若没有声音事件，可到语音设置页检测麦克风输入。",
-    "en": "No recognition text received. Check diagnostics and microphone input in Voice settings."
+    "zh": "未收到任何识别文字。请查看诊断记录；若没有声音事件，可到设置页检测麦克风输入。",
+    "en": "No recognition text received. Check diagnostics and microphone input in Settings."
   },
   "ui44": {
     "zh": "语音输入已停止，草稿已保留。",

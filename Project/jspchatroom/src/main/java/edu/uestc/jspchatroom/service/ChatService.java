@@ -6,6 +6,8 @@ import edu.uestc.jspchatroom.model.Message;
 import edu.uestc.jspchatroom.model.User;
 
 import java.util.List;
+import java.util.HashSet;
+import java.util.Map;
 
 public final class ChatService {
     private static final List<String> BLOCKED_WORDS = List.of("去死", "傻逼", "笨蛋");
@@ -13,11 +15,19 @@ public final class ChatService {
 
     private final MessageDao messages = new MessageDao();
     private final UserDao users = new UserDao();
+    private final AvatarService avatars = new AvatarService();
 
-    public record Snapshot(List<Message> messages, List<User> onlineUsers, int totalMessages) {}
+    public record Snapshot(List<Message> messages, List<User> onlineUsers, int totalMessages,
+                           Map<Integer, String> avatarVersions) {}
 
-    public Snapshot snapshot(int limit) {
-        return new Snapshot(messages.findRecent(limit), users.findOnlineUsers(), messages.countMessages());
+    public Snapshot snapshot(int limit, int currentUserId) {
+        List<Message> recent = messages.findRecent(limit);
+        List<User> online = users.findOnlineUsers();
+        var avatarUsers = new HashSet<Integer>();
+        avatarUsers.add(currentUserId);
+        recent.forEach(message -> avatarUsers.add(message.getUserId()));
+        online.forEach(user -> avatarUsers.add(user.getId()));
+        return new Snapshot(recent, online, messages.countMessages(), avatars.versions(avatarUsers));
     }
 
     public void send(int userId, String text) {

@@ -1,0 +1,278 @@
+:root {
+    color-scheme: light;
+    --paper: #f6f4ef;
+    --surface: #fffefa;
+    --ink: #242524;
+    --muted: #62665e;
+    --line: #e8e4db;
+    --rail: #252925;
+    --rail-text: #f7f3eb;
+    --rail-muted: #b7bdb3;
+    --accent: #b44c30;
+    --accent-hover: #963a22;
+    --accent-soft: #f5ded4;
+    --green: #74c8a2;
+    --radius: 14px;
+    --focus: #bd6249;
+    --brand-bg: #e58e72;
+    --brand-ink: #35241f;
+    --avatar-bg: #e3e9df;
+    --avatar-ink: #3a5549;
+    --self-avatar-bg: #f1c0aa;
+    --self-avatar-ink: #643321;
+    --self-chat-ink: #693522;
+    --button-hover: #f1ede6;
+    --button-ink: #fff;
+    --control-bg: #f4f1eb;
+    --panel-shadow: #382d2415;
+    --auth-shadow: #382d2418;
+    --rail-badge: #383e38;
+    --rail-avatar: #3f4a43;
+    --rail-avatar-ink: #d4ebdd;
+    --rail-line: #444a43;
+    --rail-button: #303630;
+    --rail-button-border: #50574e;
+    --rail-button-hover: #464f46;
+    --accent-ink: #82412f;
+    --feed: #fbfaf7;
+    --scrollbar: #cec8bb;
+    --own-border: #eed2c5;
+    --own-bg: #f8e7df;
+    --subtle-border: #dcd3c5;
+    --icon-ink: #6e756f;
+    --icon-hover: #f2eae2;
+    --translation-line: #7ca792;
+    --translation-bg: #eaf1e9;
+    --translation-ink: #315244;
+    --translation-label: #4a665b;
+    --error-line: #c57665;
+    --error-bg: #f7e9e3;
+    --error-ink: #85382d;
+    --action-error: #873a27;
+    --input-border: #dcd6ca;
+    --input-focus: #b88c7b;
+    --composer: #faf8f4;
+    --field-border: #ddd6c9;
+    --field-bg: #fcfaf6;
+    --settings-control: #f5f2eb;
+    --log-bg: #f3f0e9;
+    --art-line: #4b554d;
+    --art-line-secondary: #414940;
+    --art-bubble: #414b42;
+    --art-own: #dfa68d;
+    --art-ink: #e9efe17d;
+    --art-own-ink: #69453760;
+    --auth-error-bg: #f8e5df;
+    --auth-error-ink: #81382e;
+    --auth-success-bg: #e7efe6;
+    --auth-success-ink: #345344;
+    font-family: "Segoe UI", system-ui, -apple-system, "Microsoft YaHei", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+}
+
+:root[data-theme="coder"] {
+    color-scheme: dark;
+    --paper: #0a101b;
+    --surface: #141e2f;
+    --ink: #ecf6ff;
+    --muted: #aec0d7;
+    --line: #344967;
+    --rail: #111829;
+    --rail-text: #eff4ff;
+    --rail-muted: #a7bad4;
+    --accent: #68edf0;
+    --accent-hover: #9affff;
+    --accent-soft: #1b3b51;
+    --green: #6bffee;
+    --radius: 9px;
+    --focus: #b29aff;
+    --brand-bg: #68edf0;
+    --brand-ink: #0b2b39;
+    --avatar-bg: #29395b;
+    --avatar-ink: #dbe6ff;
+    --self-avatar-bg: #4de1eb;
+    --self-avatar-ink: #092b3b;
+    --self-chat-ink: #092b3b;
+    --button-hover: #24354e;
+    --button-ink: #082732;
+    --control-bg: #1c2940;
+    --panel-shadow: #030917aa;
+    --auth-shadow: #030917aa;
+    --rail-badge: #253757;
+    --rail-avatar: #263653;
+    --rail-avatar-ink: #bce9ff;
+    --rail-line: #344367;
+    --rail-button: #1b2940;
+    --rail-button-border: #435880;
+    --rail-button-hover: #263f61;
+    --accent-ink: #a0f8fb;
+    --feed: #101a2b;
+    --scrollbar: #55729b;
+    --own-border: #387e9f;
+    --own-bg: #173851;
+    --subtle-border: #4b678b;
+    --icon-ink: #a8c2df;
+    --icon-hover: #243c57;
+    --translation-line: #5bdcc5;
+    --translation-bg: #183e42;
+    --translation-ink: #c1ffed;
+    --translation-label: #88ecd9;
+    --error-line: #fb93b5;
+    --error-bg: #45213b;
+    --error-ink: #ffd4e2;
+    --action-error: #ffc5d9;
+    --input-border: #3e5979;
+    --input-focus: #68edf0;
+    --composer: #111c30;
+    --field-border: #405671;
+    --field-bg: #101a2b;
+    --settings-control: #22354e;
+    --log-bg: #101a2b;
+    --art-line: #3c547c;
+    --art-line-secondary: #312849;
+    --art-bubble: #2d4268;
+    --art-own: #68edf0;
+    --art-ink: #a8cdf3;
+    --art-own-ink: #194d73;
+    --auth-error-bg: #45213b;
+    --auth-error-ink: #ffd4e2;
+    --auth-success-bg: #183e42;
+    --auth-success-ink: #c1ffed;
+}
+
+:root[data-theme="union"] {
+    color-scheme: dark;
+    --paper: #191d19;
+    --surface: #272e2a;
+    --ink: #f8efe0;
+    --muted: #c6cbbd;
+    --line: #4b554b;
+    --rail: #212722;
+    --rail-text: #faf0dc;
+    --rail-muted: #c5cabb;
+    --accent: #efb957;
+    --accent-hover: #ffcd78;
+    --accent-soft: #483c25;
+    --green: #a2d5bf;
+    --radius: 8px;
+    --focus: #ffd179;
+    --brand-bg: #efb957;
+    --brand-ink: #35271a;
+    --avatar-bg: #3a504a;
+    --avatar-ink: #cbeadd;
+    --self-avatar-bg: #e1a95c;
+    --self-avatar-ink: #35271a;
+    --self-chat-ink: #35271a;
+    --button-hover: #414a3d;
+    --button-ink: #2b1f13;
+    --control-bg: #333b32;
+    --panel-shadow: #0c120c88;
+    --auth-shadow: #0c120c88;
+    --rail-badge: #3c4b40;
+    --rail-avatar: #3d5550;
+    --rail-avatar-ink: #d4efe1;
+    --rail-line: #4a564a;
+    --rail-button: #343d34;
+    --rail-button-border: #5f6955;
+    --rail-button-hover: #485442;
+    --accent-ink: #ffdb91;
+    --feed: #202824;
+    --scrollbar: #7d866d;
+    --own-border: #947643;
+    --own-bg: #453924;
+    --subtle-border: #676954;
+    --icon-ink: #bfcabb;
+    --icon-hover: #3d4b44;
+    --translation-line: #8fbfaa;
+    --translation-bg: #2d4740;
+    --translation-ink: #e0f5e9;
+    --translation-label: #acd7c3;
+    --error-line: #dc9d7b;
+    --error-bg: #553328;
+    --error-ink: #ffd7c1;
+    --action-error: #ffd4b8;
+    --input-border: #5b6757;
+    --input-focus: #e8b763;
+    --composer: #232b25;
+    --field-border: #596756;
+    --field-bg: #232b25;
+    --settings-control: #3a463c;
+    --log-bg: #222b25;
+    --art-line: #61746a;
+    --art-line-secondary: #454e40;
+    --art-bubble: #3c5750;
+    --art-own: #dfad64;
+    --art-ink: #c1e0d2;
+    --art-own-ink: #513823;
+    --auth-error-bg: #553328;
+    --auth-error-ink: #ffd7c1;
+    --auth-success-bg: #2d4740;
+    --auth-success-ink: #e0f5e9;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; }
+[hidden] { display: none !important; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: default; opacity: .62; }
+a { color: var(--accent); text-underline-offset: .23em; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+.meta { color: var(--muted); font-size: .78rem; line-height: 1.5; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+.brand { display: flex; align-items: center; gap: .7rem; font-weight: 750; letter-spacing: -.025em; }
+.brand-mark { display: inline-grid; place-items: center; width: 40px; height: 40px; flex: none; border-radius: 12px; background: var(--brand-bg); color: var(--brand-ink); box-shadow: var(--brand-highlight, none); }
+.brand-mark > span { position: relative; display: block; width: 18px; height: 13px; border: 2px solid currentColor; border-radius: 4px; }
+.brand-mark > span::before { content: ""; position: absolute; width: 7px; top: 4px; left: 3px; border-top: 2px solid currentColor; }
+.brand-mark > span::after { content: ""; position: absolute; left: 2px; bottom: -4px; width: 5px; height: 5px; border-left: 2px solid currentColor; transform: skewY(-24deg); }
+.avatar { display: grid; place-items: center; flex: none; width: 34px; height: 34px; border-radius: 50%; overflow: hidden; background: var(--avatar-bg); color: var(--avatar-ink); font-size: .9rem; font-weight: 750; text-transform: uppercase; }
+.avatar-self { color: var(--self-avatar-ink); background: var(--self-avatar-bg); }
+.avatar-image { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+.button { display: inline-flex; align-items: center; justify-content: center; gap: .55rem; min-height: 38px; padding: .55rem .85rem; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); color: var(--ink); font-size: .85rem; font-weight: 650; line-height: 1.25; text-decoration: none; }
+.button:hover:not(:disabled) { background: var(--button-hover); }
+.button-primary { background: var(--accent); border-color: var(--accent); color: var(--button-ink); }
+.button-primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+.button-quiet { background: var(--control-bg); border-color: transparent; }
+.language-switch { display: inline-flex; flex: none; gap: .15rem; padding: 3px; border: 1px solid var(--line); border-radius: 9px; background: var(--control-bg); }
+.language-switch a { padding: .3rem .5rem; border-radius: 6px; color: var(--muted); font-size: .78rem; text-decoration: none; }
+.language-switch a[aria-current="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px #28282016; font-weight: 700; }
+
+:root[data-theme="coder"] {
+    --rail-texture: linear-gradient(155deg, #28335b 0%, transparent 45%);
+    --feed-texture: linear-gradient(#62caff0d 1px, transparent 1px),
+        linear-gradient(90deg, #62caff0d 1px, transparent 1px),
+        radial-gradient(ellipse at 100% 0%, #2d42774a, transparent 68%);
+    --feed-texture-size: 26px 26px, 26px 26px, auto;
+    --header-trim: linear-gradient(90deg, #22bdff, #8e6cff 52%, #ee69b6 72%, transparent 88%);
+    --brand-highlight: inset 0 0 0 1px #aef7ff, 0 0 17px #5ce7ff60;
+}
+
+:root[data-theme="union"] {
+    --rail-texture: repeating-linear-gradient(0deg, #b9d1ad09 0 1px, transparent 1px 5px),
+        linear-gradient(158deg, #455346, transparent 54%);
+    --feed-texture: linear-gradient(#b6c7a415 1px, transparent 1px),
+        linear-gradient(90deg, #b6c7a415 1px, transparent 1px),
+        linear-gradient(150deg, #52685026, transparent 55%);
+    --feed-texture-size: 80px 80px, 80px 80px, auto;
+    --header-trim: repeating-linear-gradient(125deg, #e9b953 0 7px, #48544a 7px 14px);
+    --brand-highlight: inset 0 0 0 1px #ffe3a7;
+}
+
+:root[data-theme="coder"] .room-mark,
+:root[data-theme="union"] .room-mark {
+    border: 1px solid var(--own-border);
+    border-radius: var(--radius);
+}
+
+:root[data-theme="coder"] .message-bubble,
+:root[data-theme="union"] .message-bubble {
+    border-radius: var(--radius) var(--radius) var(--radius) 3px;
+}
+
+:root[data-theme="coder"] .message-own .message-bubble,
+:root[data-theme="union"] .message-own .message-bubble {
+    border-radius: var(--radius) var(--radius) 3px var(--radius);
+}

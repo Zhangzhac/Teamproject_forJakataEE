@@ -63,6 +63,14 @@ public class DBInitListener implements ServletContextListener {
     private static final String DDL_INDEX =
             "CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages (created_at)";
 
+    private static final String DDL_AVATARS = """
+            CREATE TABLE IF NOT EXISTS user_avatars (
+                user_id INT PRIMARY KEY REFERENCES users (id) ON DELETE CASCADE,
+                revision VARCHAR(36) NOT NULL,
+                jpeg BLOB NOT NULL
+            )
+            """;
+
     /**
      * 翻译缓存表（实验扩展：消息翻译）。
      *
@@ -114,6 +122,7 @@ public class DBInitListener implements ServletContextListener {
                 }
 
                 execute(c, DDL_INDEX);
+                execute(c, DDL_AVATARS);
 
                 // 翻译缓存表（实验扩展）：老数据库文件里没有这张表，这里补建
                 if (!tableExists(c, "MESSAGE_TRANSLATION")) {

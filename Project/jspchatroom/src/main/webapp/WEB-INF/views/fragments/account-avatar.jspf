@@ -1,0 +1,5 @@
+<c:set var="avatarUserId" value="${currentUser.id}"/>
+<c:set var="avatarName" value="${currentUser.username}"/>
+<span id="accountAvatar" class="avatar avatar-self" aria-hidden="true" data-avatar-version="${avatarVersions[avatarUserId]}">
+    <%@ include file="avatar-image.jspf" %>
+</span>

@@ -1,0 +1,6 @@
+<c:choose>
+    <c:when test="${not empty avatarVersions[avatarUserId]}">
+        <img class="avatar-image" src="${pageContext.request.contextPath}/avatar?id=${avatarUserId}&amp;v=${avatarVersions[avatarUserId]}" alt="" width="200" height="200" decoding="async">
+    </c:when>
+    <c:otherwise><c:out value="${fn:substring(avatarName, 0, 1)}"/></c:otherwise>
+</c:choose>

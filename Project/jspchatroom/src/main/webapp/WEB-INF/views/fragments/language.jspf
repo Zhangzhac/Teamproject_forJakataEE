@@ -1,0 +1,4 @@
+<nav class="language-switch" aria-label="<fmt:message key="language.switch"/>">
+    <a href="?lang=zh" lang="zh" aria-current="${pageLang eq 'zh' ? 'true' : 'false'}">&#20013;&#25991;</a>
+    <a href="?lang=en" lang="en" aria-current="${pageLang eq 'en' ? 'true' : 'false'}">English</a>
+</nav>

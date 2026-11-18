@@ -3,15 +3,22 @@
     var list = document.getElementById('msgList');
     if (!list) return;
 
+    var feed = document.getElementById('messageFeed');
     var form = document.getElementById('messageForm');
     var input = form.querySelector('textarea');
     var send = form.querySelector('button[type="submit"]');
+    send.querySelector('.send-pending').textContent = ChatI18n.t('ui61');
     var status = document.createElement('span');
-    status.className = 'meta'; status.setAttribute('role', 'status');
+    status.className = 'meta send-status'; status.setAttribute('role', 'status');
     form.appendChild(status);
     var refreshing = null;
     var stopped = false;
     var sending = false;
+
+    function syncAvatar(current, latest) {
+        if (!current || !latest || current.dataset.avatarVersion === latest.dataset.avatarVersion) return;
+        current.replaceWith(document.importNode(latest, true));
+    }
 
     // Update only presence display; leave logout form and composer untouched.
     function syncOnlineUsers(doc) {
@@ -44,16 +51,20 @@
                 var next = doc.getElementById('msgList');
                 if (!next) throw new Error(ChatI18n.t("ui60"));
                 syncOnlineUsers(doc);
+                syncAvatar(document.getElementById('accountAvatar'), doc.getElementById('accountAvatar'));
                 ['totalMessageCount', 'recentMessageSummary'].forEach(function (id) {
                     document.getElementById(id).textContent = doc.getElementById(id).textContent;
                 });
                 var ids = new Set();
-                var nearBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 100;
+                var nearBottom = feed.scrollTop + feed.clientHeight >= feed.scrollHeight - 100;
                 var added = false;
                 next.querySelectorAll('li[data-id]').forEach(function (item) {
                     var id = item.dataset.id; ids.add(id);
-                    if (!list.querySelector('li[data-id="' + id + '"]')) {
+                    var current = list.querySelector('li[data-id="' + id + '"]');
+                    if (!current) {
                         list.appendChild(document.importNode(item, true)); added = true;
+                    } else {
+                        syncAvatar(current.querySelector('.message-avatar'), item.querySelector('.message-avatar'));
                     }
                 });
                 list.querySelectorAll('li[data-id]').forEach(function (item) {
@@ -65,30 +76,48 @@
                 var empty = document.getElementById('emptyMessages');
                 if (empty) empty.hidden = ids.size > 0;
                 document.getElementById('recentMessageSummary').hidden = ids.size === 0;
-                if (added && nearBottom && document.activeElement !== input) list.lastElementChild.scrollIntoView({block: 'nearest'});
+                if (added && nearBottom) scrollToLatest();
                 if (!sending) status.textContent = '';
             }).finally(function () { refreshing = null; });
         return refreshing;
     }
+    function scrollToLatest() {
+        feed.scrollTop = feed.scrollHeight;
+    }
+
+    scrollToLatest();
+
     function poll() {
         if (stopped) return;
         refreshMessages().catch(function (e) { status.textContent = e.message; })
             .finally(function () { if (!stopped) window.setTimeout(poll, 2000); });
     }
     window.setTimeout(poll, 2000);
+    input.addEventListener('keydown', function (event) {
+        // Some browsers report Enter while the input method is confirming a candidate.
+        if (event.defaultPrevented || event.key !== 'Enter' || event.shiftKey || event.altKey ||
+                event.ctrlKey || event.metaKey || event.isComposing || event.keyCode === 229) return;
+
+        event.preventDefault();
+        if (!event.repeat && !sending && !stopped && input.value.trim()) form.requestSubmit(send);
+    });
+
     form.addEventListener('submit', function (event) {
         event.preventDefault();
         if (sending || stopped || !input.value.trim()) return;
         sending = true; send.disabled = true;
         var draft = input.value;
-        status.textContent = ChatI18n.t("ui61");
+        status.textContent = '';
         fetch(form.action, {method: 'POST', headers: {'X-Chat-Request': 'fetch'},
             body: new URLSearchParams(new FormData(form))})
             .then(function (r) {
                 if (r.status !== 204) throw new Error(ChatI18n.t("ui62"));
                 if (input.value === draft) input.value = '';
                 // Wait for an older poll before reading the newly committed message.
-                return Promise.resolve(refreshing).catch(function () {}).then(refreshMessages);
+                return Promise.resolve(refreshing).catch(function () {}).then(refreshMessages).then(function () {
+                    status.textContent = '';
+                    scrollToLatest();
+                });
             }).catch(function (e) { status.textContent = e.message; })
             .finally(function () { sending = false; send.disabled = false; });
     });
