@@ -12,7 +12,7 @@
     <title><fmt:message key="title.chat"/></title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/theme.css?v=3">
     <script src="${pageContext.request.contextPath}/assets/js/theme.js?v=1"></script>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/chat.css?v=6">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/chat.css?v=7">
 </head>
 <body class="chat-page" data-context-path="${pageContext.request.contextPath}">
 <div class="chat-shell">
